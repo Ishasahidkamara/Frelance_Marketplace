@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block title %}{{ service.title }} - FreelanceHub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Main -->
+        <div class="col-lg-8">
+            {% if service.image %}
+            <img src="{{ service.image.url }}" class="img-fluid rounded-3 mb-4 w-100" style="max-height:380px;object-fit:cover;" alt="{{ service.title }}">
+            {% endif %}
+            <h2 class="fw-bold mb-2">{{ service.title }}</h2>
+            {% if service.category %}
+            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary mb-3">{{ service.category.name }}</span>
+            {% endif %}
+
+            <!-- Freelancer mini card -->
+            <div class="card border-0 bg-light p-3 mb-4">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="{{ service.freelancer.get_profile_picture_url }}" class="rounded-circle" width="55" height="55" style="object-fit:cover;">
+                    <div>
+                        <h6 class="fw-bold mb-0">{{ service.freelancer.get_full_name }}</h6>
+                        <small class="text-muted">{{ freelancer_profile.professional_title|default:"Freelancer" }}</small>
+                        <div class="rating-stars">
+                            {% if freelancer_profile %}
+                            {% for i in "12345" %}{% if forloop.counter <= freelancer_profile.rating %}★{% else %}☆{% endif %}{% endfor %}
+                            <small class="text-muted">{{ freelancer_profile.rating }}/5 · {{ freelancer_profile.completed_projects }} projects</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{% url 'freelancers:detail' service.freelancer.username %}" class="btn btn-outline-primary btn-sm ms-auto">View Profile</a>
+                </div>
+            </div>
+
+            <h5 class="fw-bold">Description</h5>
+            <p class="text-muted">{{ service.description|linebreaks }}</p>
+
+            {% if service.skills %}
+            <h5 class="fw-bold mt-4">Skills Used</h5>
+            <div class="mb-3">
+                {% for skill in service.get_skills_list %}
+                <span class="badge bg-secondary me-1 mb-1">{{ skill }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Reviews -->
+            {% if reviews %}
+            <h5 class="fw-bold mt-4">Reviews</h5>
+            {% for review in reviews %}
+            <div class="border-bottom pb-3 mb-3">
+                <div class="d-flex gap-3 align-items-center mb-1">
+                    <img src="{{ review.client.get_profile_picture_url }}" class="rounded-circle" width="36" height="36" style="object-fit:cover;">
+                    <div>
+                        <div class="fw-semibold">{{ review.client.get_full_name }}</div>
+                        <div class="rating-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+                    </div>
+                    <small class="text-muted ms-auto">{{ review.created_at|date:"M d, Y" }}</small>
+                </div>
+                <p class="text-muted mb-0 ms-5">{{ review.comment }}</p>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Order Card -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow sticky-top" style="top:80px;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold text-primary mb-0">NLe {{ service.price }}</h4>
+                        <span class="badge bg-light text-dark border"><i class="bi bi-clock me-1"></i>{{ service.delivery_days }} days</span>
+                    </div>
+                    <hr>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>{{ service.delivery_days }}-day delivery</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Professional quality</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Satisfaction guaranteed</li>
+                    </ul>
+
+                    {% if user.is_authenticated %}
+                        {% if user != service.freelancer %}
+                            {% if user.is_client %}
+                            <a href="{% url 'projects:request_project' service.pk %}" class="btn btn-primary w-100 btn-lg mb-2">
+                                <i class="bi bi-send me-2"></i>Request Project
+                            </a>
+                            <a href="{% url 'messaging:conversation' service.freelancer.pk %}" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="bi bi-chat-dots me-2"></i>Contact Freelancer
+                            </a>
+                            <a href="{% url 'reports:report_service' service.pk %}" class="btn btn-outline-danger btn-sm w-100">
+                                <i class="bi bi-flag me-1"></i>Report Service
+                            </a>
+                            {% endif %}
+                        {% else %}
+                        <a href="{% url 'services:edit' service.pk %}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="bi bi-pencil me-2"></i>Edit Service
+                        </a>
+                        {% endif %}
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary w-100 btn-lg mb-2">
+                        <i class="bi bi-person me-2"></i>Login to Request
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary w-100">Create Account</a>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <small class="text-muted"><i class="bi bi-shield-check me-1 text-success"></i>Safe & Secure Transactions</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

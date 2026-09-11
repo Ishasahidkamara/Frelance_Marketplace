@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Edit Freelancer Profile - FreelanceHub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <i class="bi bi-person-gear fs-5 me-2"></i>
+                    <h5 class="mb-0">Edit Professional Profile</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Professional Title</label>
+                                {{ form.professional_title }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">About / Biography</label>
+                                {{ form.biography }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Skills <small class="text-muted">(comma-separated)</small></label>
+                                {{ form.skills }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Hourly Rate (NLe)</label>
+                                {{ form.hourly_rate }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Website</label>
+                                {{ form.website }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Experience</label>
+                                {{ form.experience }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Education</label>
+                                {{ form.education }}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Portfolio</label>
+                                {{ form.portfolio }}
+                            </div>
+                            <div class="col-12 d-flex align-items-center gap-2">
+                                {{ form.availability }}
+                                <label class="form-check-label fw-semibold">Available for work</label>
+                            </div>
+                        </div>
+                        <div class="mt-4 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">Save Profile</button>
+                            <a href="{% url 'freelancers:my_profile' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

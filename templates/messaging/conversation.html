@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Chat with {{ other_user.get_full_name }} - FreelanceHub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="card border-0 shadow-sm mb-0" style="border-radius:12px 12px 0 0;">
+                <div class="card-body py-3 px-4 d-flex align-items-center gap-3" style="background:linear-gradient(135deg,#0d6efd,#6610f2);border-radius:12px 12px 0 0;">
+                    <a href="{% url 'messaging:inbox' %}" class="text-white me-2"><i class="bi bi-arrow-left fs-5"></i></a>
+                    <img src="{{ other_user.get_profile_picture_url }}" class="rounded-circle" width="42" height="42" style="object-fit:cover;border:2px solid rgba(255,255,255,0.5);">
+                    <div>
+                        <div class="fw-bold text-white">{{ other_user.get_full_name }}</div>
+                        <small class="text-white-50">{{ other_user.role|title }}</small>
+                    </div>
+                    {% if other_user.is_freelancer %}
+                    <a href="{% url 'freelancers:detail' other_user.username %}" class="btn btn-sm btn-light ms-auto">View Profile</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-box border-start border-end" id="chatBox">
+                {% for msg in messages_list %}
+                <div class="d-flex {% if msg.sender == user %}justify-content-end{% else %}justify-content-start{% endif %} mb-2">
+                    {% if msg.sender != user %}
+                    <img src="{{ msg.sender.get_profile_picture_url }}" class="rounded-circle me-2 align-self-end" width="28" height="28" style="object-fit:cover;">
+                    {% endif %}
+                    <div class="{% if msg.sender == user %}chat-bubble-sent{% else %}chat-bubble-received{% endif %}">
+                        <div>{{ msg.message }}</div>
+                        {% if msg.attachment %}
+                        <div class="mt-1">
+                            <a href="{{ msg.attachment.url }}" class="{% if msg.sender == user %}text-white-50{% else %}text-muted{% endif %} small" download>
+                                <i class="bi bi-paperclip me-1"></i>Attachment
+                            </a>
+                        </div>
+                        {% endif %}
+                        <div class="{% if msg.sender == user %}text-white-50{% else %}text-muted{% endif %}" style="font-size:0.7rem;margin-top:3px;">
+                            {{ msg.created_at|date:"H:i" }}
+                            {% if msg.sender == user %}
+                            <i class="bi bi-check{% if msg.is_read %}-all{% endif %} ms-1"></i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-chat-square fs-2 d-block mb-2"></i>
+                    Start the conversation!
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Message Input -->
+            <div class="card border-0 shadow-sm" style="border-radius:0 0 12px 12px;">
+                <div class="card-body p-3">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2 align-items-end">
+                            <div class="flex-fill">
+                                <textarea name="message" class="form-control border-0 bg-light" rows="2" placeholder="Type a message..." required style="resize:none;border-radius:12px;"></textarea>
+                            </div>
+                            <div class="d-flex flex-column gap-1">
+                                <label class="btn btn-outline-secondary btn-sm" title="Attach file">
+                                    <i class="bi bi-paperclip"></i>
+                                    <input type="file" name="attachment" class="d-none">
+                                </label>
+                                <button type="submit" class="btn btn-primary btn-sm px-3">
+                                    <i class="bi bi-send-fill"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Scroll chat to bottom on load
+    const chatBox = document.getElementById('chatBox');
+    if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}

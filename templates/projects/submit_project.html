@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Submit Work - FreelanceHub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white p-4">
+                    <h4 class="mb-0"><i class="bi bi-upload me-2"></i>Submit Completed Work</h4>
+                    <small class="opacity-75">Project: {{ project.title }}</small>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>Upload your deliverables and mark the project as submitted. The client will review and confirm completion.
+                    </div>
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Upload Files (optional)</label>
+                            <input type="file" name="files" class="form-control" multiple>
+                            <div class="form-text">You can upload multiple files. Allowed: documents, images, archives.</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-5">
+                                <i class="bi bi-send me-2"></i>Submit for Review
+                            </button>
+                            <a href="{% url 'projects:project_detail' project.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

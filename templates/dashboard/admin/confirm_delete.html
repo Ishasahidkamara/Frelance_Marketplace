@@ -1,0 +1,28 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Confirm Delete - Admin{% endblock %}
+{% block sidebar %}
+<a href="{% url 'home' %}" class="sidebar-brand"><i class="bi bi-briefcase-fill me-2 text-primary"></i>FreelanceHub</a>
+<nav class="nav flex-column">
+    <a class="nav-link" href="{% url 'dashboard:admin_dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+    <hr class="border-secondary">
+    <a class="nav-link text-danger" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+</nav>
+{% endblock %}
+{% block dashboard_content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card border-0 shadow text-center p-5">
+            <i class="bi bi-exclamation-triangle text-danger fs-1 mb-3"></i>
+            <h4 class="fw-bold">Confirm Delete</h4>
+            <p class="text-muted">Are you sure you want to delete this {{ type }}? This action cannot be undone.</p>
+            <div class="d-flex justify-content-center gap-3 mt-3">
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger px-4">Yes, Delete</button>
+                </form>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

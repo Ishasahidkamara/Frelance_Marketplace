@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Create Service - FreelanceHub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-header bg-primary text-white p-4">
+                    <h4 class="mb-0"><i class="bi bi-plus-circle me-2"></i>Create New Service</h4>
+                    <small class="opacity-75">Your service will be reviewed before going live</small>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Service Title <span class="text-danger">*</span></label>
+                            {{ form.title }}
+                            <div class="form-text">Start with "I will..." — e.g. "I will build a professional Django website"</div>
+                        </div>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                                {{ form.category }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Price (NLe) <span class="text-danger">*</span></label>
+                                {{ form.price }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold">Delivery (days) <span class="text-danger">*</span></label>
+                                {{ form.delivery_days }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Description <span class="text-danger">*</span></label>
+                            {{ form.description }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Skills (comma-separated)</label>
+                            {{ form.skills }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Service Image</label>
+                            {{ form.image }}
+                            <div class="form-text">Upload a relevant image for your service (optional)</div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-5">Submit for Review</button>
+                            <a href="{% url 'freelancers:my_profile' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

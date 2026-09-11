@@ -1,0 +1,134 @@
+/* ============================================================
+   FreelanceHub - Main Stylesheet
+   ============================================================ */
+
+:root {
+    --primary: #0d6efd;
+    --sidebar-width: 240px;
+}
+
+/* Hero */
+.hero-section {
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+    padding: 90px 0 80px;
+    clip-path: ellipse(100% 100% at 50% 0%);
+}
+
+/* Cards hover */
+.hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12) !important;
+}
+
+/* Sidebar */
+.sidebar {
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+}
+.sidebar .nav-link {
+    color: rgba(255,255,255,0.75);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 2px;
+    transition: all 0.2s;
+}
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+}
+.sidebar .nav-link i { width: 20px; }
+.sidebar-brand {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    padding: 10px 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    margin-bottom: 12px;
+    display: block;
+}
+
+/* Stat cards */
+.stat-card {
+    border-left: 4px solid var(--primary);
+    border-radius: 10px;
+}
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Service card image placeholder */
+.service-img-placeholder {
+    height: 160px;
+    background: linear-gradient(135deg, #e9ecef, #dee2e6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Rating stars */
+.rating-stars { color: #ffc107; }
+
+/* Chat */
+.chat-box {
+    height: 420px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px;
+}
+.chat-bubble-sent {
+    background: #0d6efd;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 18px 18px 4px 18px;
+    max-width: 70%;
+    margin-left: auto;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+.chat-bubble-received {
+    background: white;
+    border: 1px solid #dee2e6;
+    padding: 10px 14px;
+    border-radius: 18px 18px 18px 4px;
+    max-width: 70%;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+/* Badge status */
+.badge-pending   { background-color: #ffc107; color: #000; }
+.badge-active    { background-color: #198754; color: #fff; }
+.badge-completed { background-color: #0d6efd; color: #fff; }
+.badge-rejected  { background-color: #dc3545; color: #fff; }
+.badge-submitted { background-color: #6f42c1; color: #fff; }
+.badge-cancelled { background-color: #6c757d; color: #fff; }
+
+/* Profile pic ring */
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+
+/* Tables */
+.table th { font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: .5px; }
+
+/* Responsive sidebar */
+@media (max-width: 768px) {
+    .sidebar-wrapper { display: none; }
+}

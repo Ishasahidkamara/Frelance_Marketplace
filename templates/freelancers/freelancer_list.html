@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Find Freelancers - FreelanceHub{% endblock %}
+{% block content %}
+<div class="bg-light py-4 mb-4">
+    <div class="container">
+        <h2 class="fw-bold mb-1">Find Freelancers</h2>
+        <p class="text-muted mb-3">Discover skilled professionals for every project</p>
+        <form method="GET" class="row g-2">
+            <div class="col-md-5">
+                <input type="text" name="q" class="form-control" placeholder="Search by name, title or skill..." value="{{ query }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="skill" class="form-control" placeholder="Skill (e.g. Python)" value="{{ skill }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="location" class="form-control" placeholder="Location" value="{{ location }}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="container pb-5">
+    <div class="row g-4">
+        {% for profile in freelancers %}
+        <div class="col-sm-6 col-lg-4 col-xl-3">
+            <div class="card border-0 shadow-sm h-100 hover-card text-center p-3">
+                <img src="{{ profile.user.get_profile_picture_url }}" class="rounded-circle mx-auto mb-3 profile-avatar" width="80" height="80" alt="{{ profile.user.get_full_name }}">
+                <h5 class="fw-bold mb-0">{{ profile.user.get_full_name }}</h5>
+                <p class="text-muted small mb-2">{{ profile.professional_title|default:"Freelancer" }}</p>
+                {% if profile.user.location %}
+                <p class="text-muted small mb-2"><i class="bi bi-geo-alt me-1"></i>{{ profile.user.location }}</p>
+                {% endif %}
+                <div class="rating-stars mb-2">
+                    {% for i in "12345" %}{% if forloop.counter <= profile.rating %}★{% else %}☆{% endif %}{% endfor %}
+                    <small class="text-muted ms-1">{{ profile.rating }}/5</small>
+                </div>
+                <div class="mb-3">
+                    {% for skill in profile.get_skills_list|slice:":3" %}
+                    <span class="badge bg-light text-dark border me-1">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+                <div class="text-muted small mb-3">
+                    <i class="bi bi-check-circle text-success me-1"></i>{{ profile.completed_projects }} projects completed
+                </div>
+                <a href="{% url 'freelancers:detail' profile.user.username %}" class="btn btn-outline-primary btn-sm">View Profile</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted py-5">
+            <i class="bi bi-people fs-1 d-block mb-2"></i>No freelancers found. Try adjusting your search.
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if freelancers.has_other_pages %}
+    <nav class="mt-5 d-flex justify-content-center">
+        <ul class="pagination">
+            {% if freelancers.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ freelancers.previous_page_number }}&q={{ query }}&skill={{ skill }}&location={{ location }}">Previous</a></li>
+            {% endif %}
+            {% for num in freelancers.paginator.page_range %}
+            <li class="page-item {% if freelancers.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}&q={{ query }}&skill={{ skill }}&location={{ location }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if freelancers.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ freelancers.next_page_number }}&q={{ query }}&skill={{ skill }}&location={{ location }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

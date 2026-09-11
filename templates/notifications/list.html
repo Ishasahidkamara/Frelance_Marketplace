@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}Notifications - FreelanceHub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0"><i class="bi bi-bell me-2 text-primary"></i>Notifications</h3>
+                <a href="{% url 'notifications:mark_all_read' %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-check-all me-1"></i>Mark All Read
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="list-group list-group-flush">
+                    {% for notif in notifications %}
+                    <div class="list-group-item border-0 py-3 {% if not notif.is_read %}bg-primary bg-opacity-5{% endif %}">
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 mt-1
+                                {% if notif.notification_type == 'project' %}bg-primary bg-opacity-10
+                                {% elif notif.notification_type == 'message' %}bg-success bg-opacity-10
+                                {% elif notif.notification_type == 'service' %}bg-warning bg-opacity-10
+                                {% elif notif.notification_type == 'review' %}bg-info bg-opacity-10
+                                {% else %}bg-secondary bg-opacity-10{% endif %}"
+                                style="width:40px;height:40px;">
+                                <i class="bi
+                                    {% if notif.notification_type == 'project' %}bi-kanban text-primary
+                                    {% elif notif.notification_type == 'message' %}bi-chat-dots text-success
+                                    {% elif notif.notification_type == 'service' %}bi-grid text-warning
+                                    {% elif notif.notification_type == 'review' %}bi-star text-info
+                                    {% else %}bi-bell text-secondary{% endif %}"></i>
+                            </div>
+                            <div class="flex-fill">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-semibold">{{ notif.title }}</span>
+                                    <small class="text-muted">{{ notif.created_at|timesince }} ago</small>
+                                </div>
+                                <p class="text-muted mb-0 small">{{ notif.message }}</p>
+                            </div>
+                            {% if not notif.is_read %}
+                            <span class="badge bg-primary rounded-pill flex-shrink-0">New</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item border-0 text-center text-muted py-5">
+                        <i class="bi bi-bell-slash fs-1 d-block mb-3"></i>
+                        <h5>No notifications yet</h5>
+                        <p>You're all caught up!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block title %}Browse Services - FreelanceHub{% endblock %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm p-3">
+                <h6 class="fw-bold mb-3"><i class="bi bi-funnel me-2"></i>Filters</h6>
+                <form method="GET">
+                    <input type="hidden" name="q" value="{{ query }}">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Category</label>
+                        <select name="category" class="form-select form-select-sm">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat.id }}" {% if category_id == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Price Range (NLe)</label>
+                        <div class="row g-1">
+                            <div class="col-6"><input type="number" name="min_price" class="form-control form-control-sm" placeholder="Min (NLe)" value="{{ min_price }}"></div>
+                            <div class="col-6"><input type="number" name="max_price" class="form-control form-control-sm" placeholder="Max (NLe)" value="{{ max_price }}"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Min Rating</label>
+                        <select name="rating" class="form-select form-select-sm">
+                            <option value="">Any Rating</option>
+                            <option value="4" {% if min_rating == '4' %}selected{% endif %}>4★ & above</option>
+                            <option value="3" {% if min_rating == '3' %}selected{% endif %}>3★ & above</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Max Delivery (days)</label>
+                        <input type="number" name="delivery" class="form-control form-control-sm" placeholder="e.g. 7" value="{{ max_delivery }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Apply Filters</button>
+                    <a href="{% url 'services:list' %}" class="btn btn-outline-secondary btn-sm w-100 mt-2">Clear All</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h5 class="fw-bold mb-0">
+                        {% if selected_category %}{{ selected_category.name }}
+                        {% elif query %}Results for "{{ query }}"
+                        {% else %}All Services{% endif %}
+                    </h5>
+                    <small class="text-muted">{{ services.paginator.count }} services found</small>
+                </div>
+                <form method="GET" class="d-flex gap-2">
+                    <input type="text" name="q" class="form-control form-control-sm" placeholder="Search services..." value="{{ query }}" style="min-width:220px;">
+                    <button class="btn btn-primary btn-sm px-3"><i class="bi bi-search"></i></button>
+                </form>
+            </div>
+
+            <div class="row g-4">
+                {% for service in services %}
+                <div class="col-sm-6 col-xl-4">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+                        {% if service.image %}
+                        <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.title }}" style="height:150px;object-fit:cover;">
+                        {% else %}
+                        <div class="service-img-placeholder rounded-top"><i class="bi bi-briefcase text-muted fs-1"></i></div>
+                        {% endif %}
+                        <div class="card-body pb-2">
+                            <div class="d-flex align-items-center mb-2 gap-2">
+                                <img src="{{ service.freelancer.get_profile_picture_url }}" class="rounded-circle" width="24" height="24" style="object-fit:cover;">
+                                <small class="text-muted">{{ service.freelancer.get_full_name }}</small>
+                            </div>
+                            <h6 class="fw-semibold">{{ service.title|truncatechars:55 }}</h6>
+                            {% if service.category %}
+                            <span class="badge bg-light text-primary border border-primary small">{{ service.category.name }}</span>
+                            {% endif %}
+                            <div class="mt-2">
+                                <span class="text-warning small">
+                                    {% with r=service.freelancer.freelancer_profile.rating %}
+                                    {% for i in "12345" %}{% if forloop.counter <= r %}★{% else %}☆{% endif %}{% endfor %}
+                                    {% endwith %}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-top-0 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="fw-bold text-primary fs-6">NLe {{ service.price }}</span>
+                                <span class="text-muted small ms-2"><i class="bi bi-clock me-1"></i>{{ service.delivery_days }}d</span>
+                            </div>
+                            <a href="{% url 'services:detail' service.pk %}" class="btn btn-sm btn-primary">View</a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center text-muted py-5">
+                    <i class="bi bi-search fs-1 d-block mb-2"></i>
+                    No services found. Try different filters.
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if services.has_other_pages %}
+            <nav class="mt-4 d-flex justify-content-center">
+                <ul class="pagination">
+                    {% if services.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ services.previous_page_number }}&q={{ query }}&category={{ category_id }}">Previous</a></li>
+                    {% endif %}
+                    {% for num in services.paginator.page_range %}
+                    <li class="page-item {% if services.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}&q={{ query }}&category={{ category_id }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    {% if services.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ services.next_page_number }}&q={{ query }}&category={{ category_id }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

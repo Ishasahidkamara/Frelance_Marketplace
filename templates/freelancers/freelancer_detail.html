@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}{{ freelancer.get_full_name }} - FreelanceHub{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Profile Sidebar -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm text-center p-4 mb-4">
+                <img src="{{ freelancer.get_profile_picture_url }}" class="rounded-circle mx-auto mb-3 profile-avatar" width="100" height="100" alt="{{ freelancer.get_full_name }}">
+                <h4 class="fw-bold mb-0">{{ freelancer.get_full_name }}</h4>
+                <p class="text-muted">{{ profile.professional_title|default:"Freelancer" }}</p>
+                {% if freelancer.location %}
+                <p class="text-muted small"><i class="bi bi-geo-alt me-1"></i>{{ freelancer.location }}</p>
+                {% endif %}
+                <div class="rating-stars fs-5 mb-1">
+                    {% for i in "12345" %}{% if forloop.counter <= profile.rating %}★{% else %}☆{% endif %}{% endfor %}
+                </div>
+                <p class="text-muted small mb-3">{{ profile.rating }}/5 · {{ reviews|length }} reviews</p>
+                <div class="d-flex justify-content-center gap-3 mb-3 text-center">
+                    <div>
+                        <div class="fw-bold fs-5">{{ profile.completed_projects }}</div>
+                        <small class="text-muted">Projects</small>
+                    </div>
+                    <div class="border-start border-end px-3">
+                        <div class="fw-bold fs-5">{{ profile.get_skills_list|length }}</div>
+                        <small class="text-muted">Skills</small>
+                    </div>
+                    <div>
+                        <div class="fw-bold fs-5">{% if profile.availability %}<span class="text-success">Open</span>{% else %}<span class="text-danger">Busy</span>{% endif %}</div>
+                        <small class="text-muted">Status</small>
+                    </div>
+                </div>
+                {% if user.is_authenticated and user != freelancer %}
+                <a href="{% url 'messaging:conversation' freelancer.pk %}" class="btn btn-outline-primary w-100 mb-2">
+                    <i class="bi bi-chat-dots me-2"></i>Contact
+                </a>
+                {% if user.is_client %}
+                <a href="{% url 'reports:report_user' freelancer.pk %}" class="btn btn-outline-danger btn-sm w-100">
+                    <i class="bi bi-flag me-1"></i>Report
+                </a>
+                {% endif %}
+                {% endif %}
+            </div>
+
+            <!-- Skills -->
+            <div class="card border-0 shadow-sm p-3 mb-4">
+                <h6 class="fw-bold mb-3">Skills</h6>
+                <div>
+                    {% for skill in profile.get_skills_list %}
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary me-1 mb-1 px-2 py-1">{{ skill }}</span>
+                    {% empty %}
+                    <small class="text-muted">No skills listed</small>
+                    {% endfor %}
+                </div>
+            </div>
+            <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>Member since {{ freelancer.date_joined|date:"M Y" }}</small>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- About -->
+            {% if profile.biography %}
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-3">About</h5>
+                <p class="text-muted">{{ profile.biography }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Experience -->
+            {% if profile.experience %}
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-briefcase me-2 text-primary"></i>Experience</h5>
+                <p class="text-muted">{{ profile.experience|linebreaks }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Education -->
+            {% if profile.education %}
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-mortarboard me-2 text-primary"></i>Education</h5>
+                <p class="text-muted">{{ profile.education|linebreaks }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Services -->
+            {% if services %}
+            <div class="card border-0 shadow-sm p-4 mb-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-grid me-2 text-primary"></i>Services</h5>
+                <div class="row g-3">
+                    {% for service in services %}
+                    <div class="col-sm-6">
+                        <div class="card border hover-card h-100">
+                            {% if service.image %}
+                            <img src="{{ service.image.url }}" class="card-img-top" style="height:120px;object-fit:cover;" alt="">
+                            {% endif %}
+                            <div class="card-body p-3">
+                                <h6 class="fw-semibold mb-1">{{ service.title|truncatechars:50 }}</h6>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <span class="fw-bold text-primary">NLe {{ service.price }}</span>
+                                    <span class="badge bg-light text-dark"><i class="bi bi-clock me-1"></i>{{ service.delivery_days }}d</span>
+                                </div>
+                                <a href="{% url 'services:detail' service.pk %}" class="btn btn-sm btn-outline-primary w-100 mt-2">View Service</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Reviews -->
+            <div class="card border-0 shadow-sm p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-star me-2 text-warning"></i>Reviews ({{ reviews|length }})</h5>
+                {% for review in reviews %}
+                <div class="border-bottom pb-3 mb-3">
+                    <div class="d-flex align-items-center gap-3 mb-2">
+                        <img src="{{ review.client.get_profile_picture_url }}" class="rounded-circle" width="40" height="40" style="object-fit:cover;">
+                        <div>
+                            <div class="fw-semibold">{{ review.client.get_full_name }}</div>
+                            <div class="rating-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
+                        </div>
+                        <small class="text-muted ms-auto">{{ review.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    <p class="text-muted mb-0">{{ review.comment }}</p>
+                </div>
+                {% empty %}
+                <p class="text-muted">No reviews yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

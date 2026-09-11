@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 col-md-3 px-0 sidebar-wrapper">
+            <div class="sidebar bg-dark text-white min-vh-100 p-3">
+                {% block sidebar %}{% endblock %}
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="col-lg-10 col-md-9 py-4 px-4">
+            {% block dashboard_content %}{% endblock %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% block title %}Reports - Admin{% endblock %}
+{% block sidebar %}
+<a href="{% url 'home' %}" class="sidebar-brand"><i class="bi bi-briefcase-fill me-2 text-primary"></i>FreelanceHub</a>
+<nav class="nav flex-column">
+    <a class="nav-link" href="{% url 'dashboard:admin_dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+    <a class="nav-link" href="{% url 'dashboard:admin_users' %}"><i class="bi bi-people me-2"></i>Users</a>
+    <a class="nav-link" href="{% url 'dashboard:admin_services' %}"><i class="bi bi-grid me-2"></i>Services</a>
+    <a class="nav-link" href="{% url 'dashboard:admin_categories' %}"><i class="bi bi-tags me-2"></i>Categories</a>
+    <a class="nav-link" href="{% url 'dashboard:admin_projects' %}"><i class="bi bi-kanban me-2"></i>Projects</a>
+    <a class="nav-link" href="{% url 'dashboard:admin_reviews' %}"><i class="bi bi-star me-2"></i>Reviews</a>
+    <a class="nav-link active" href="{% url 'dashboard:admin_reports' %}"><i class="bi bi-flag me-2"></i>Reports</a>
+    <hr class="border-secondary">
+    <a class="nav-link text-danger" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+</nav>
+{% endblock %}
+{% block dashboard_content %}
+<h3 class="fw-bold mb-4">Reports</h3>
+<div class="mb-3">
+    <a href="{% url 'dashboard:admin_reports' %}" class="btn btn-sm {% if not status %}btn-primary{% else %}btn-outline-primary{% endif %} me-1">All</a>
+    <a href="?status=pending" class="btn btn-sm {% if status == 'pending' %}btn-warning{% else %}btn-outline-warning{% endif %} me-1">Pending</a>
+    <a href="?status=under_review" class="btn btn-sm {% if status == 'under_review' %}btn-info{% else %}btn-outline-info{% endif %} me-1">Under Review</a>
+    <a href="?status=resolved" class="btn btn-sm {% if status == 'resolved' %}btn-success{% else %}btn-outline-success{% endif %} me-1">Resolved</a>
+</div>
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light"><tr><th>Reporter</th><th>Reported User</th><th>Reason</th><th>Description</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for r in reports %}
+                <tr>
+                    <td>{{ r.reporter.username }}</td>
+                    <td>{{ r.reported_user.username|default:"-" }}</td>
+                    <td><span class="badge bg-danger">{{ r.reason }}</span></td>
+                    <td><small>{{ r.description|truncatechars:60 }}</small></td>
+                    <td>
+                        {% if r.status == 'pending' %}<span class="badge badge-pending">Pending</span>
+                        {% elif r.status == 'under_review' %}<span class="badge bg-info text-dark">Under Review</span>
+                        {% elif r.status == 'resolved' %}<span class="badge badge-active">Resolved</span>
+                        {% else %}<span class="badge bg-secondary">Rejected</span>{% endif %}
+                    </td>
+                    <td><small>{{ r.created_at|date:"M d, Y" }}</small></td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateModal{{ r.pk }}">Update</button>
+                        <!-- Update Modal -->
+                        <div class="modal fade" id="updateModal{{ r.pk }}" tabindex="-1">
+                            <div class="modal-dialog"><div class="modal-content">
+                                <div class="modal-header"><h5 class="modal-title">Update Report</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                                <form method="POST" action="{% url 'dashboard:admin_update_report' r.pk %}">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Update Status</label>
+                                            <select name="status" class="form-select">
+                                                <option value="pending" {% if r.status == 'pending' %}selected{% endif %}>Pending</option>
+                                                <option value="under_review" {% if r.status == 'under_review' %}selected{% endif %}>Under Review</option>
+                                                <option value="resolved" {% if r.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                                                <option value="rejected" {% if r.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Admin Notes</label>
+                                            <textarea name="admin_notes" class="form-control" rows="3">{{ r.admin_notes }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </form>
+                            </div></div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">No reports found.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
